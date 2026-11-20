@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="MarrBench: 54 classic vision tasks for multimodal agents. The image reaches only the model's vision encoder; the answer is drawn by a program re-executed without images."
+    />
+    <meta name="theme-color" content="#0a0a0c" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="MarrBench: Can Multimodal Agents Solve Classic Vision Tasks?" />
+    <meta
+      property="og:description"
+      content="54 tasks in 8 families. Images reach only the vision encoder; programs are re-executed without images and scored against hidden ground truth."
+    />
+    <meta property="og:url" content="https://ocean-mind-lab.github.io/projects/marrbench/" />
+    <meta property="og:image" content="https://ocean-mind-lab.github.io/projects/marrbench/assets/og-card.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://ocean-mind-lab.github.io/projects/marrbench/" />
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
+    <title>MarrBench: Can Multimodal Agents Solve Classic Vision Tasks?</title>
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="styles.css?v=20261112g" />
+    <script src="data/benchmark.js?v=20261112g" defer></script>
+    <script src="data/cases.js?v=20261112g" defer></script>
+    <script src="app.js?v=20261112g" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="topbar" data-topbar>
+      <a class="wordmark" href="#top">MarrBench</a>
+      <nav class="nav" aria-label="Sections">
+        <a href="../../">Lab home</a>
+        <a href="#rule">The rule</a>
+        <a href="#leaderboard">Leaderboard</a>
+        <a href="#examples">Examples</a>
+        <a href="#citation">Cite</a>
+      </nav>
+      <a class="pill pill-light" href="assets/MarrBench.pdf">Paper</a>
+    </header>
+
+    <main id="main">
+      <!-- Hero: a real benchmark input, seen through a lens that reveals its ground truth. -->
+      <section class="hero" id="top">
+        <div class="hero-copy">
+          <p class="kicker">A benchmark for multimodal agents</p>
+          <h1>MarrBench</h1>
+          <p class="tagline">Can Multimodal Agents Solve Classic Vision Tasks?</p>
+          <div class="hero-actions">
+            <a class="pill pill-light" href="assets/MarrBench.pdf">Read the paper</a>
+            <a class="pill" href="https://github.com/OceanMind-Lab/MarrBench" target="_blank" rel="noreferrer">Code</a>
+            <a class="pill" href="https://huggingface.co/datasets/OceanMind-Lab/MarrBench" target="_blank" rel="noreferrer">Dataset</a>
+          </div>
+          <dl class="hero-stats">
+            <div><dt>tasks</dt><dd data-count="54">54</dd></div>
+            <div><dt>families</dt><dd data-count="8">8</dd></div>
+            <div><dt>checkpoints</dt><dd data-count="242">242</dd></div>
+            <div><dt>models</dt><dd data-count="10">10</dd></div>
+          </dl>
+        </div>
+
+        <figure class="lens-stage" aria-label="Benchmark input with a lens that reveals its ground truth">
+          <div class="lens-frame">
+            <canvas id="lens" aria-hidden="true"></canvas>
+            <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+          </div>
+          <figcaption class="lens-caption">
+            <span class="lens-tag" id="lens-tag">EDG</span>
+            <span id="lens-name">Edges &amp; strokes</span>
+            <span class="lens-hint">Move to look · inside the lens: ground truth</span>
+          </figcaption>
+          <div class="lens-dots" id="lens-dots" role="tablist" aria-label="Task family shown in the lens"></div>
+        </figure>
+      </section>
+
+      <!-- The rule -->
+      <section class="section" id="rule">
+        <div class="wrap">
+          <p class="eyebrow">01 · The rule</p>
+          <h2 class="display">The image reaches the model’s eyes.<br /><em>Never its code.</em></h2>
+          <p class="lede">
+            MarrBench scores only what the agent itself saw.
+          </p>
+
+          <div class="flow">
+            <div class="zone zone-host">
+              <p class="zone-label"><i></i>Host · holds the pixels</p>
+              <div class="zone-steps">
+                <article class="step">
+                  <span class="step-n">1</span>
+                  <h3>The image stays here</h3>
+                  <div class="step-art"><img src="assets/families/grp-input.png" alt="GRP04 input scene" loading="lazy" /></div>
+                  <p>The input never enters the sandbox.</p>
+                </article>
+                <article class="step">
+                  <span class="step-n">2</span>
+                  <h3>The model looks</h3>
+                  <div class="step-art step-views">
+                    <img src="assets/families/grp-input.png" alt="" loading="lazy" />
+                    <span class="view v1">crop</span><span class="view v2">crop</span><span class="view-grid"></span>
+                  </div>
+                  <p><b>20 views</b> (crops, grids, overlays), shown only to the model.</p>
+                </article>
+              </div>
+            </div>
+
+            <div class="boundary" aria-label="Pixel boundary: only text crosses">
+              <span class="boundary-line"></span>
+              <span class="boundary-tag">Pixel boundary<small>only text crosses</small></span>
+            </div>
+
+            <div class="zone zone-box">
+              <p class="zone-label"><i></i>Sandbox · no pixels, no vision models, no network</p>
+              <div class="zone-steps zone-steps-3">
+                <article class="step">
+                  <span class="step-n">3</span>
+                  <h3>It writes a program</h3>
+                  <pre class="step-code" aria-label="Excerpt of the model's generate.py"><code><i># bicycle</i>
+WHEEL, FRAME = 13, 14
+ring(img, 816, 291, 96, 90,
+     17, WHEEL)
+line(img, (620, 180),
+     (754, 157), FRAME, 10)
+<i># top tube</i></code></pre>
+                  <p>Its <code>generate.py</code>: every coordinate comes from what it saw.</p>
+                </article>
+                <article class="step">
+                  <span class="step-n">4</span>
+                  <h3>Re-run, blind</h3>
+                  <div class="step-art"><img src="assets/cases/grp04/opus55.png" alt="Re-executed part map" loading="lazy" /></div>
+                  <p>A fresh container runs it on metadata alone.</p>
+                </article>
+                <article class="step step-score">
+                  <span class="step-n">5</span>
+                  <h3>Scored vs. truth</h3>
+                  <div class="score-card">
+                    <strong>84.4</strong><span>/ 100</span>
+                    <ul id="cp-list" aria-label="Checkpoint credits"></ul>
+                  </div>
+                  <p>Five weighted checkpoints, after 25 steps.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <p class="calib-title">How the scale is anchored</p>
+          <div class="calib" aria-label="Score calibration">
+            <div><b>100.0</b><span>oracle programs</span></div>
+            <div><b>16.6</b><span>classical operators</span></div>
+            <div><b>0.6</b><span>best lazy output</span></div>
+            <div><b>0.0</b><span>empty output</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Leaderboard -->
+      <section class="section section-tint" id="leaderboard">
+        <div class="wrap">
+          <p class="eyebrow">02 · Leaderboard</p>
+          <h2 class="display">No model <em>sees everything</em>.</h2>
+          <p class="lede">
+            Ten models on all 54 tasks under one harness.
+          </p>
+
+          <div class="board-shell">
+            <table class="board" id="board">
+              <thead></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="board-foot">
+            <div class="think-legend" id="think-legend" aria-label="Think: requested reasoning effort"></div>
+            <p>
+              <b>Bold</b>: best; <u>underline</u>: second best. Overall: equal-weight mean over 54 tasks; 95% CI:
+              percentile bootstrap over tasks. C−P: coarse- minus pixel-level checkpoint credit.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Examples -->
+      <section class="section" id="examples">
+        <div class="wrap">
+          <p class="eyebrow">03 · Look closer</p>
+          <h2 class="display">A score has <em>a shape</em>.</h2>
+          <p class="lede">
+            Re-executed outputs of all ten models on ten representative tasks.
+          </p>
+
+          <div class="strip" id="case-strip" role="tablist" aria-label="Task"></div>
+
+          <div class="viewer">
+            <header class="viewer-head">
+              <div>
+                <p class="viewer-kicker"><span class="tag" id="case-tag"></span><span id="case-id"></span></p>
+                <h3 id="case-title"></h3>
+                <p id="case-desc"></p>
+              </div>
+              <p class="viewer-rule" id="case-rule"></p>
+            </header>
+
+            <div class="viewer-main">
+              <figure class="viewer-input">
+                <figcaption>Input</figcaption>
+                <img id="case-input" alt="Task input" />
+              </figure>
+              <figure class="viewer-compare">
+                <figcaption><b id="case-model"></b><span class="vs">vs. ground truth</span><span class="score-pill" id="case-score"></span></figcaption>
+                <div class="split" id="case-split" data-split>
+                  <img class="split-under" id="case-target" alt="Ground truth" />
+                  <div class="split-over"><img id="case-output" alt="Model output" /><div class="no-output" id="case-empty">No valid program (score 0)</div></div>
+                  <div class="split-handle" aria-hidden="true"><i></i></div>
+                  <span class="split-label split-label-l">Model</span>
+                  <span class="split-label split-label-r">Truth</span>
+                  <input class="split-range" type="range" min="0" max="100" value="50" aria-label="Compare model output and ground truth" />
+                </div>
+              </figure>
+            </div>
+
+            <div class="model-grid" id="model-grid" role="tablist" aria-label="Model"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Team and citation -->
+      <section class="section section-tint" id="citation">
+        <div class="wrap">
+          <p class="eyebrow">04 · Team</p>
+          <h2 class="display">Acknowledgement</h2>
+
+          <div class="credits">
+            <div class="credit-group credit-lead">
+              <p class="role">Project leader</p>
+              <p class="names"><span>Xiaogang Xu<sup>2</sup></span></p>
+            </div>
+            <div class="credit-group credit-core">
+              <p class="role">Core contributors</p>
+              <p class="names">
+                <span>Jiaqi Tang<sup>1</sup></span><span>Youyang Zhai<sup>3</sup></span><span>Yaoyu Yang<sup>3</sup></span>
+                <span>Jianmin Chen<sup>3</sup></span><span>Botong Geng<sup>3</sup></span><span>Yingying Yan<sup>3</sup></span>
+                <span>Lihao Liu<sup>3</sup></span>
+              </p>
+            </div>
+            <div class="credit-group credit-other">
+              <p class="role">Contributors</p>
+              <p class="names">
+                <span>Wei Wei<sup>3</sup></span><span>Kelu Yao<sup>4</sup></span><span>Xiaobin Hu<sup>5</sup></span>
+                <span>Aimin Pan<sup>6</sup></span><span>Jiafei Wu<sup>2</sup></span><span>Zhe Liu<sup>2</sup></span>
+                <span>Shuicheng Yan<sup>5</sup></span>
+              </p>
+            </div>
+            <div class="credit-group credit-corr">
+              <p class="role">Corresponding author</p>
+              <p class="names"><span>Qifeng Chen<sup>1</sup></span></p>
+            </div>
+          </div>
+
+          <ol class="affils" aria-label="Affiliations">
+            <li>The Hong Kong University of Science and Technology</li><li>Zhejiang University</li>
+            <li>Northwestern Polytechnical University</li><li>Zhejiang Lab</li>
+            <li>National University of Singapore</li><li>VNET Group</li>
+          </ol>
+
+          <div class="cite">
+            <div class="cite-top">
+              <span>BibTeX</span>
+              <button type="button" class="pill pill-small" id="copy-cite">Copy</button>
+            </div>
+            <pre><code id="cite-code">@techreport{tang2026marrbench,
+  title       = {MarrBench: Can Multimodal Agents Solve Classic Vision Tasks?},
+  author      = {Tang, Jiaqi and Xu, Xiaogang and Zhai, Youyang and Yang, Yaoyu
+                 and Chen, Jianmin and Geng, Botong and Yan, Yingying and Liu, Lihao
+                 and Wei, Wei and Yao, Kelu and Hu, Xiaobin and Pan, Aimin
+                 and Wu, Jiafei and Liu, Zhe and Chen, Qifeng and Yan, Shuicheng},
+  year        = {2026},
+  type        = {Technical Report},
+  institution = {MarrBench},
+  url         = {https://github.com/OceanMind-Lab/MarrBench}
+}</code></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
